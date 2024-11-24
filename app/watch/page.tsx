@@ -1,3 +1,4 @@
+import fetchEpisodes from "@/actions/fetch/fetchepisodes";
 import { fetchInfo } from "@/actions/fetch/fetchinfo";
 import { redirect } from "next/navigation";
 
@@ -14,6 +15,8 @@ export default async function Watch({
   if (!animeinfo) {
     return <div>Not Found</div>;
   }
+  const zoroeps = await fetchEpisodes(params.id, "zoro");
+  console.log(zoroeps);
 
   return (
     <>
