@@ -14,6 +14,8 @@ import {
   defaultLayoutIcons,
   DefaultVideoLayout,
 } from "@vidstack/react/player/layouts/default";
+import { a } from "framer-motion/client";
+import fetchWatchUrl from "@/actions/fetch/fetchwatchurl";
 
 export default async function Watch({
   searchParams,
@@ -28,14 +30,16 @@ export default async function Watch({
   if (!animeinfo) {
     return <div>Not Found</div>;
   }
-  const zoroeps = await fetchEpisodes(params.id, "zoro");
-  const activeEpisode = zoroeps.find(
+  const zoroeps = await fetchEpisodes(params.id);
+  const activeEpisode = zoroeps?.find(
     (episode: { number: number }) =>
       episode.number === parseInt(String(params.ep))
   );
   if (!activeEpisode) {
     redirect(`/watch?id=${params.id}&ep=1`);
   }
+  const activeepsurlzoro = await fetchWatchUrl(activeEpisode?.episodeId ?? "");
+  console.log(activeepsurlzoro);
 
   return (
     <>
@@ -46,7 +50,7 @@ export default async function Watch({
               <div className="rounded-lg relative">
                 <MediaPlayer
                   title={`loading`}
-                  src={"https://www.youtube.com/watch?v=8KN7H1A3_jE"}
+                  src={activeepsurlzoro?.sources[0].url}
                 >
                   <MediaProvider />
                   <DefaultVideoLayout icons={defaultLayoutIcons} />
@@ -56,7 +60,7 @@ export default async function Watch({
             <div className="rounded-lg p-2 order-2 bg-muted/40">
               <ScrollArea className="h-[60vh]">
                 <div className="grid grid-cols-5 gap-1">
-                  {zoroeps.map((episode: any) => (
+                  {zoroeps?.map((episode: any) => (
                     <Link href={`/watch?id=${params.id}&ep=${episode.number}`}>
                       <Button
                         key={episode.id}

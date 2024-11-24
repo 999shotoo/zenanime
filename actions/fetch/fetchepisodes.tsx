@@ -1,15 +1,15 @@
 "use server";
 
-import { Ani2MalId } from "./ani2malid";
+import { HiAnime } from "aniwatch";
+import { fetchZoroId } from "./fetchzoroid";
 
-export default async function fetchEpisodes(id: string, provider: string) {
+const hianime = new HiAnime.Scraper();
+
+export default async function fetchEpisodes(id: string) {
   try {
-    const ani_id = await Ani2MalId(id);
-    const geteps = await fetch(
-      `${process.env.ZENANIME_API_URL}/meta/anilist/episodes/${ani_id}?provider=${provider}`
-    );
-    const episodes = await geteps.json();
-    return episodes;
+    const zoroid = await fetchZoroId(id);
+    const episodes = await hianime.getEpisodes(zoroid);
+    return episodes.episodes;
   } catch (e) {
     console.error(e);
     return null;
