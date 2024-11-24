@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 export async function FetchTrending() {
   try {
     const gettrending = await fetch(
-      "https://animeapi.giize.com/meta/anilist/trending"
+      `${process.env.ZENANIME_API_URL}/meta/anilist/trending`
     );
     const trending = await gettrending.json();
 

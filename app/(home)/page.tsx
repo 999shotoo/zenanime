@@ -1,5 +1,6 @@
 import { fetchAnimePopular } from "@/actions/fetch/fetchpopular";
 import { FetchTrending } from "@/actions/fetch/fetchtrending";
+import AnimeCards from "@/components/animecards";
 import Carousal from "@/components/home/carousal";
 
 export default async function Home() {
@@ -11,6 +12,7 @@ export default async function Home() {
         <Carousal data={trending.results} />
         <div>
           <h2 className="text-3xl font-bold py-4">Popular Anime</h2>
+          <AnimeCards data={popularAnime.data} />
         </div>
       </div>
     </>
