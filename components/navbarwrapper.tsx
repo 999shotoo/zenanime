@@ -25,7 +25,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollArea } from "./ui/scroll-area";
 import { ReactNode } from "react";
 import { redirect, usePathname, useRouter } from "next/navigation";
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 
 export const description =
   "A products dashboard with a sidebar navigation and a main content area. The dashboard has a header with a search input and a user menu. The sidebar has a logo, navigation links, and a card with a call to action. The main content area shows an empty state with a call to action.";

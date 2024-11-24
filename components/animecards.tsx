@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { Card, CardContent } from "./ui/card";
 import Image from "next/image";
 
@@ -11,7 +11,7 @@ export default function AnimeCards(props: { data: any }) {
         {animeList.length > 0 ? (
           animeList.map((anime: any, index: number) => (
             <div key={index} className="rounded-lg shadow-lg overflow-hidden ">
-              <Link className="block" href={`/anime/${anime.mal_id}/1`}>
+              <Link className="block" href={`/watch?id=${anime.mal_id}`}>
                 <Image
                   alt="Anime 1"
                   className="w-full h-[250px] object-cover rounded-lg"
