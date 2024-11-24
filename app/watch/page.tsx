@@ -17,11 +17,13 @@ import {
 import { a } from "framer-motion/client";
 import fetchWatchUrl from "@/actions/fetch/fetchwatchurl";
 
+interface SearchParams {
+  id: string;
+  ep: string;
+}
+
 interface PageProps {
-  searchParams: {
-    id: string;
-    ep: string;
-  };
+  searchParams: Promise<SearchParams>;
 }
 
 export default async function Watch({ searchParams }: PageProps) {
