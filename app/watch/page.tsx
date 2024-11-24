@@ -17,11 +17,14 @@ import {
 import { a } from "framer-motion/client";
 import fetchWatchUrl from "@/actions/fetch/fetchwatchurl";
 
-export default async function Watch({
-  searchParams,
-}: {
-  searchParams: { id: string; ep: string };
-}) {
+interface PageProps {
+  searchParams: {
+    id: string;
+    ep: string;
+  };
+}
+
+export default async function Watch({ searchParams }: PageProps) {
   const params = await searchParams;
   if (!params.ep) {
     redirect(`/watch?id=${params.id}&ep=1`);
