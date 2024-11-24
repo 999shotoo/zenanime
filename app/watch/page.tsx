@@ -41,10 +41,9 @@ export default async function Watch({ searchParams }: PageProps) {
       episode.number === parseInt(String(params.ep))
   );
   if (!activeEpisode) {
-    redirect(`/watch?id=${params.id}&ep=1`);
+    console.log("Not Found");
   }
   const activeepsurlzoro = await fetchWatchUrl(activeEpisode?.episodeId ?? "");
-  console.log(activeepsurlzoro);
 
   return (
     <>
