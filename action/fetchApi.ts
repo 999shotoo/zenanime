@@ -153,6 +153,11 @@ export async function FetchSource(id: string, dub: boolean) {
 }
 
 export async function FetchEpisodes(id: string) {
+
+    const cacheddata = await redis.get(`episodes:${id}`);
+    if (cacheddata) {
+        return JSON.parse(cacheddata);
+    }
     try {
         const fetcheps = await fetch(`https://shiroko.co/api/v2/episode/${id}`, {
             headers: {
@@ -160,8 +165,9 @@ export async function FetchEpisodes(id: string) {
             }
         });
         const episodes = await fetcheps.json();
-        const zoroeps = await episodes.data.find((ep: any) => ep.providerId === 'gogoanime').episodes;
-        return zoroeps;
+        const gogoeps = await episodes.data.find((ep: any) => ep.providerId === 'gogoanime').episodes;
+        await redis.set(`episodes:${id}`, JSON.stringify(gogoeps), 'EX', 3600);
+        return gogoeps;
     } catch (error) {
         return 0;
     }
