@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Skeleton } from "../ui/skeleton";
-import { Button } from "../ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Flag } from "lucide-react";
-import Cookies from "js-cookie"; // Ensure you have this installed
+import Cookies from "js-cookie";
 import { FetchSource } from "@/action/fetchApi";
 import { DefaultPlayer } from "./players/defaultplayer";
 
@@ -18,7 +18,6 @@ export function VideoPlayer({ activeEpisode }: VideoPlayerProps) {
   const [loading, setLoading] = useState(true);
   const [episodeData, setEpisodeData] = useState<any>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<string>(() => {
-    // Get the language from cookies, default to "sub"
     return Cookies.get("language") || "sub";
   });
 
@@ -35,7 +34,7 @@ export function VideoPlayer({ activeEpisode }: VideoPlayerProps) {
           activeEpisode.id,
           selectedLanguage === "dub"
         );
-        setEpisodeData(data); // Store the full episode data
+        setEpisodeData(data);
       } catch (error) {
         console.error("Failed to fetch episode data:", error);
         setEpisodeData(null);
@@ -44,11 +43,10 @@ export function VideoPlayer({ activeEpisode }: VideoPlayerProps) {
       }
     };
 
-    fetchEpisodeData(); // Call fetch function
-  }, [activeEpisode, animeid, selectedLanguage]); // Dependencies include parameters
+    fetchEpisodeData();
+  }, [activeEpisode, animeid, selectedLanguage]);
 
   useEffect(() => {
-    // Update cookies when language changes
     Cookies.set("language", selectedLanguage);
   }, [selectedLanguage]);
 
@@ -62,9 +60,7 @@ export function VideoPlayer({ activeEpisode }: VideoPlayerProps) {
   return (
     <>
       {loading ? (
-        <div className="flex justify-center items-center h-52 md:h-full">
-          <Skeleton className="h-full w-full" />
-        </div>
+        <Skeleton className="h-auto aspect-video" />
       ) : (
         <div>
           {episodeData ? (

@@ -63,39 +63,38 @@ async function getSkipTimes(
 }
 
 
-// const mapAvailableEpisodes = (gogoAnime: Episode[], tvdb: TVDBEpisode[], zoro: Episode[]) => {
+// const mapAvailableEpisodes = (gogoAnime: Episode[], tvdb: { [key: string]: TVDBEpisode }, zoro: Episode[]) => {
 //     const availableEpisodes = gogoAnime.filter(gogoEpisode =>
-//         tvdb.some(tvdbEpisode => tvdbEpisode.number === gogoEpisode.number)
+//         tvdb.hasOwnProperty(gogoEpisode.number.toString())
 //     ).map(gogoEpisode => {
-//         const matchedtvdbEpisode = tvdb.find(tvdbEpisode => tvdbEpisode.number === gogoEpisode.number);
+//         const matchedtvdbEpisode = tvdb[gogoEpisode.number.toString()];
 //         const matchedZoroEpisode = zoro.find(zoroEpisode => zoroEpisode.number === gogoEpisode.number);
 
 //         return {
 //             gogoId: gogoEpisode.id.replace(/^\//, ''),
 //             zoroId: matchedZoroEpisode?.id.replace(/^\/watch\//, ''),
-//             tvdbId: matchedtvdbEpisode?.id,
-//             tvdbTitle: matchedtvdbEpisode?.title,
-//             tvdbDescription: matchedtvdbEpisode?.description,
-//             tvdbImg: matchedtvdbEpisode?.img,
-//             tvdbNumber: matchedtvdbEpisode?.number,
-//             tvdbIsFiller: matchedtvdbEpisode?.isFiller,
+//             tvdbId: matchedtvdbEpisode?.tvdbId,
+//             tvdbTitle: matchedtvdbEpisode?.title.en, // Assuming you want the English title
+//             tvdbDescription: matchedtvdbEpisode?.overview,
+//             tvdbImg: matchedtvdbEpisode?.image,
+//             tvdbNumber: matchedtvdbEpisode?.episodeNumber,
 //         };
 //     });
 
 //     return availableEpisodes;
 // };
 
-// export async function FetchEpisodes(id: string): Promise<any> { 
+// export async function FetchEpisodes(id: string): Promise<any> {
 //     if (!id) {
 //         return 0;
 //     }
-//     let combine: any; 
+//     let combine: any;
 
 //     try {
-//         const cachedValue = await redis.get(`episodes:${id}`);
-//         if (cachedValue) {
-//             return JSON.parse(cachedValue);
-//         }
+//         // const cachedValue = await redis.get(`episodes:${id}`);
+//         // if (cachedValue) {
+//         //     return JSON.parse(cachedValue);
+//         // }
 //     } catch (error) {
 //         console.error('Redis error:', error);
 //     }
@@ -119,7 +118,7 @@ async function getSkipTimes(
 //         }
 
 //         try {
-//             await redis.set(`episodes:${id}`, JSON.stringify(combine), 'EX', 3600);
+//             // await redis.set(`episodes:${id}`, JSON.stringify(combine), 'EX', 3600);
 //         } catch (error) {
 //             console.error('Failed to cache in Redis:', error);
 //         }

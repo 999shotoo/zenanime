@@ -35,6 +35,7 @@ export default function RootLayout({
             attribute="class"
             defaultTheme="system"
             enableSystem
+            enableColorScheme={false}
             disableTransitionOnChange
           >
             <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">

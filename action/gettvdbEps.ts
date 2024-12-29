@@ -1,22 +1,29 @@
 'use server';
 
 export interface TVDBEpisode {
-    id: string;
-    description: string;
-    hasDub: boolean;
-    img: string;
-    isFiller: boolean;
-    number: number;
-    title: string;
-    updatedAt: number;
-    rating: number;
-}
-
-interface EpisodeData {
-    id: string;
+    tvdbShowId: number;
+    tvdbId: number;
+    seasonNumber: number;
+    episodeNumber: number;
+    absoluteEpisodeNumber: number;
+    title: {
+        ja: string;
+        en: string;
+        'x-jat': string;
+    };
+    airDate: string;
+    airDateUtc: string;
+    runtime: number;
+    overview: string;
+    image: string;
     episode: string;
+    anidbEid: number;
+    length: number;
+    airdate: string;
+    rating: string;
+    summary: string;
+    finaleType?: string;
 }
-
 
 export const FetchTVDBEps = async (id: number) => {
     if (!id) {
@@ -24,9 +31,9 @@ export const FetchTVDBEps = async (id: number) => {
     }
     try {
 
-        const fetchmapping = await fetch(`https://anify.eltik.cc/content-metadata/${id}`);
+        const fetchmapping = await fetch(`https://api.ani.zip/mappings?anilist_id=${id}`);
         const mapping = await fetchmapping.json();
-        const tmdb = mapping.find((provider: { providerId: string; }) => provider.providerId === "tvdb").data;
+        const tmdb = mapping.episodes
 
         return tmdb;
     } catch (error) {

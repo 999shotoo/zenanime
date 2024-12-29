@@ -2,6 +2,7 @@
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import Image from "next/image";
+import { ScrollArea } from "../ui/scroll-area";
 
 const recommendations = [
   {
@@ -61,28 +62,30 @@ export function Recommendations() {
         <CardTitle>Recommendations</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {recommendations.map((anime) => (
-            <div
-              key={anime.id}
-              className="flex items-center gap-3 p-2 hover:bg-accent rounded-lg cursor-pointer"
-            >
-              <Image
-                src={anime.image}
-                alt={anime.title}
-                width={50}
-                height={70}
-                className="rounded object-cover"
-              />
-              <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-sm">{anime.title}</h3>
-                <p className="text-xs text-muted-foreground">
-                  {anime.type} • {anime.episodes} Episodes • {anime.status}
-                </p>
+        <ScrollArea className="h-60">
+          <div className="space-y-4">
+            {recommendations.map((anime) => (
+              <div
+                key={anime.id}
+                className="flex items-center gap-3 p-2 hover:bg-accent rounded-lg cursor-pointer"
+              >
+                <Image
+                  src={anime.image}
+                  alt={anime.title}
+                  width={50}
+                  height={70}
+                  className="rounded object-cover"
+                />
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-medium text-sm">{anime.title}</h3>
+                  <p className="text-xs text-muted-foreground">
+                    {anime.type} • {anime.episodes} Episodes • {anime.status}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </ScrollArea>
       </CardContent>
     </Card>
   );

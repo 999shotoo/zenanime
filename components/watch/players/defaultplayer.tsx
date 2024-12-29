@@ -17,7 +17,7 @@ export function DefaultPlayer(props: { src: any; activeEpisode: any }) {
     <div className=" rounded-3xl overflow-hidden">
       <MediaPlayer
         title={activeEpisode?.title || "Video Player"}
-        src={`https://m3u8proxy.shotodev999.workers.dev/?url=${
+        src={`https://renewed-georgeanne-nekonode-1aa70c0c.koyeb.app/fetch?url=${
           src.sources.find((s: any) => s.quality === "default")?.url
         }`}
         aspectRatio="16/9"
