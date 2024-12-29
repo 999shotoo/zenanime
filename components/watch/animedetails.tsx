@@ -35,8 +35,7 @@ export default function AnimeDetails() {
       <div className="flex flex-row gap-6">
         <Image
           src={
-            animeDetails?.coverImage.large ||
-            "/placeholder.svg?height=300&width=200&text=Anime+Cover"
+            animeDetails?.coverImage.large || "https://imgur.com/EI2OjoG.png"
           }
           alt={
             animeDetails?.title.userPreferred ||
@@ -50,7 +49,7 @@ export default function AnimeDetails() {
         <div className="space-y-4 flex-1">
           <div className="space-y-1">
             <Image
-              src={animeDetails.bannerImage}
+              src={animeDetails.bannerImage || "https://imgur.com/JJF1knO.png"}
               width={1080}
               height={1920}
               alt=""

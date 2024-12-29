@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
+import { Skeleton } from "../ui/skeleton";
+import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Flag } from "lucide-react";
-import Cookies from "js-cookie";
+import Cookies from "js-cookie"; // Ensure you have this installed
 import { FetchSource } from "@/action/fetchApi";
 import { DefaultPlayer } from "./players/defaultplayer";
 
@@ -31,13 +31,14 @@ export function VideoPlayer({ activeEpisode }: VideoPlayerProps) {
       setLoading(true);
       try {
         const data = await FetchSource(
-          activeEpisode.id,
+          activeEpisode.zoroId,
           selectedLanguage === "dub"
         );
         setEpisodeData(data);
       } catch (error) {
         console.error("Failed to fetch episode data:", error);
         setEpisodeData(null);
+        setSelectedLanguage("sub");
       } finally {
         setLoading(false);
       }
@@ -51,22 +52,25 @@ export function VideoPlayer({ activeEpisode }: VideoPlayerProps) {
   }, [selectedLanguage]);
 
   const handleLanguageChange = (language: string) => {
-    if (language === "dub" && !activeEpisode.hasDub) {
-      return;
-    }
     setSelectedLanguage(language);
   };
 
   return (
     <>
       {loading ? (
-        <Skeleton className="h-auto aspect-video" />
+        <>
+          <Skeleton className="h-auto aspect-video" />
+        </>
       ) : (
         <div>
           {episodeData ? (
-            <DefaultPlayer src={episodeData} activeEpisode={activeEpisode} />
+            <DefaultPlayer
+              src={episodeData}
+              activeEpisode={activeEpisode}
+              animeid={animeid ?? ""}
+            />
           ) : (
-            <div className="flex justify-center items-center h-full">
+            <div className="flex justify-center items-center h-full aspect-video">
               <p className="text-muted-foreground">
                 No video source available.
               </p>
@@ -96,7 +100,6 @@ export function VideoPlayer({ activeEpisode }: VideoPlayerProps) {
                 className={`${
                   selectedLanguage === "dub" ? "bg-primary" : "bg-secondary"
                 } text-primary-foreground`}
-                disabled={!activeEpisode.hasDub}
               >
                 Dub
               </Button>

@@ -17,7 +17,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
 import { ScrollArea } from "../ui/scroll-area";
-import { FetchEpisodes } from "@/action/fetchApi";
+import { FetchEpisodes, FetchEpisodes2 } from "@/action/fetchApi";
 import { VideoPlayer } from "./playersection";
 
 const EPISODES_PER_PAGE = 100;
@@ -33,8 +33,8 @@ export default function WatchSection() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [debouncedSearch, setDebouncedSearch] = useState<string>(search);
   const [activeEpisode, setActiveEpisode] = useState<any>(null);
-  const [videoLoading, setVideoLoading] = useState<boolean>(true); // New loading state for video player
-  const [videoCardLoading, setVideoCardLoading] = useState<boolean>(true); // New loading state for VideoCard
+  const [videoLoading, setVideoLoading] = useState<boolean>(true);
+  const [videoCardLoading, setVideoCardLoading] = useState<boolean>(true);
   const [layout, setLayout] = useState<"numbers" | "titles" | "thumbnails">(
     () => {
       if (typeof window !== "undefined") {
@@ -55,9 +55,21 @@ export default function WatchSection() {
     const fetchEpisodes = async () => {
       setLoading(true);
       try {
-        const data = await FetchEpisodes(animeid || "");
+        const data = await FetchEpisodes2(animeid || "");
         if (Array.isArray(data)) {
-          setEpisodes(data);
+          // Map the new data structure to the expected format
+          const formattedEpisodes = data.map((ep) => ({
+            id: ep.tvdbId, // Assuming tvdbId is unique
+            number: ep.tvdbNumber,
+            title: ep.tvdbTitle,
+            description: ep.tvdbDescription,
+            img: ep.tvdbImg,
+            rating: ep.rating,
+            isFiller: ep.isFiller,
+            gogoId: ep.gogoId,
+            zoroId: ep.zoroId,
+          }));
+          setEpisodes(formattedEpisodes);
         } else {
           setEpisodes([]);
         }
@@ -132,7 +144,7 @@ export default function WatchSection() {
             <div className="mt-4">
               <div className="flex flex-col space-y-3 sm:space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                  <Skeleton className="h-32 w-full  mb-2 sm:mb-0" />
+                  <Skeleton className="h-32 w-full mb-2 sm:mb-0" />
                 </div>
               </div>
             </div>
@@ -169,7 +181,7 @@ export default function WatchSection() {
                         : "numbers"
                     )
                   }
-                  className="hidden sm:flex"
+                  className="flex"
                   title="Toggle layout"
                 >
                   {layout === "numbers" ? (
@@ -215,8 +227,8 @@ export default function WatchSection() {
                     transition={{ duration: 0.3 }}
                     className="space-y-4"
                   >
-                    {Array.from({ length: 4 }).map((_, index) => (
-                      <Skeleton key={index} className="h-44" />
+                    {Array.from({ length: 5 }).map((_, index) => (
+                      <Skeleton key={index} className="h-32" />
                     ))}
                   </motion.div>
                 ) : paginatedEpisodes.length === 0 ? (
@@ -248,7 +260,7 @@ export default function WatchSection() {
                         key={episode.id}
                         episode={episode}
                         animeid={animeid}
-                        isActive={activeEpisode?.id === episode.id}
+                        isActive={activeEpisode?.number === episode.number}
                         dubParam={Boolean(dubParam)}
                         layout={layout}
                       />
@@ -280,14 +292,13 @@ function EpisodeCard({
   const router = useRouter();
   const handleEpisodeClick = () => {
     if (animeid) {
-      // Construct the new URL with the dub parameter
       const newUrl = new URL(`/watch`, window.location.origin);
       newUrl.searchParams.set("id", animeid);
       newUrl.searchParams.set("ep", episode.number.toString());
       if (dubParam) {
-        newUrl.searchParams.set("dub", dubParam.toString()); // Add dub parameter if it exists
+        newUrl.searchParams.set("dub", dubParam.toString());
       }
-      router.push(newUrl.toString()); // Navigate to the new URL
+      router.push(newUrl.toString());
     }
   };
 
@@ -314,7 +325,7 @@ function EpisodeCard({
               alt={episode.title || `Episode ${episode.number}`}
               width={180}
               height={100}
-              className="rounded-md object-cover"
+              className="rounded-md object-cover aspect-video"
             />
             <div className="absolute bottom-2 left-2 bg-background/80 px-2 py-0.5 rounded text-xs font-medium">
               EP {episode.number}
@@ -330,7 +341,7 @@ function EpisodeCard({
             <span className="text-lg font-medium">{episode.number}</span>
           ) : (
             <>
-              <h3 className="font-semibold  line-clamp-1">
+              <h3 className="font-semibold line-clamp-1">
                 {`Episode ${episode.number} - ${episode.title}` ||
                   `Episode ${episode.number}`}
               </h3>
