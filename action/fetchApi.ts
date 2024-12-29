@@ -68,23 +68,21 @@ export async function getSkipTimes(
 
 
 
-const mapAvailableEpisodes = (gogoAnime: Episode[], tvdb: { [key: string]: TVDBEpisode }, zoro: Episode[], animeDetails: any) => {
+const mapAvailableEpisodes = (tvdb: { [key: string]: TVDBEpisode }, zoro: Episode[], animeDetails: any) => {
     const availableEpisodes = zoro.filter(zoroEpisode =>
         tvdb.hasOwnProperty(zoroEpisode.number.toString())
     ).map(zoroEpisode => {
         const matchedtvdbEpisode = tvdb[zoroEpisode.number.toString()];
-        const matchedGogoEpisode = gogoAnime.find(gogoEpisode => gogoEpisode.number === zoroEpisode.number);
 
         return {
-            gogoId: matchedGogoEpisode?.id.replace(/^\//, ''),
             zoroId: zoroEpisode.id.replace(/^\/watch\//, ''),
             tvdbId: matchedtvdbEpisode?.tvdbId,
-            rating: matchedtvdbEpisode?.rating || matchedGogoEpisode?.rating || null,
-            isFiller: zoroEpisode.isFiller || matchedGogoEpisode?.isFiller || false,
+            rating: matchedtvdbEpisode?.rating || null,
+            isFiller: zoroEpisode.isFiller || false,
             tvdbTitle: matchedtvdbEpisode?.title.en || zoroEpisode.title, // Assuming you want the English title
             tvdbDescription: matchedtvdbEpisode?.overview || animeDetails.description, // Use AniList description if TVDB is not available
             tvdbImg: matchedtvdbEpisode?.image || animeDetails.coverImage.extraLarge, // Use AniList cover image if TVDB is not available
-            tvdbNumber: matchedtvdbEpisode?.episodeNumber || zoroEpisode.number || matchedGogoEpisode?.number,
+            tvdbNumber: matchedtvdbEpisode?.episodeNumber || zoroEpisode.number,
         };
     });
 
@@ -112,14 +110,11 @@ export async function FetchEpisodes2(id: string): Promise<any> {
             return 0;
         }
 
-        // Fetch Zoro episodes
         const response = await fetch('https://anify.eltik.cc/episodes/' + id);
         const epsfetched = await response.json();
-        const gogoanime = epsfetched.find((provider: { providerId: string; }) => provider.providerId === "gogoanime").episodes;
         const tvdbeps = (await FetchTVDBEps(Number(id))) || [];
         const zoroEpisodes = epsfetched.find((provider: { providerId: string; }) => provider.providerId === "zoro")?.episodes || [];
 
-        // Fetch anime details from AniList
         const animeResponse = await fetch(`https://graphql.anilist.co`, {
             method: 'POST',
             headers: {
@@ -144,7 +139,7 @@ export async function FetchEpisodes2(id: string): Promise<any> {
         const animeData = await animeResponse.json();
         const animeDetails = animeData.data.Media || {};
 
-        combine = await mapAvailableEpisodes(gogoanime, tvdbeps, zoroEpisodes, animeDetails);
+        combine = await mapAvailableEpisodes(tvdbeps, zoroEpisodes, animeDetails);
         if (!combine || combine.length === 0) {
             return 0;
         }
