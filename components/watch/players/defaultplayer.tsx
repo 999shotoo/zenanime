@@ -17,7 +17,7 @@ export function DefaultPlayer(props: { src: any; activeEpisode: any }) {
     <div className=" rounded-3xl overflow-hidden">
       <MediaPlayer
         title={activeEpisode?.title || "Video Player"}
-        src={`https://prxy.miruro.to/m3u8/?url=${
+        src={`https://m3u8proxy.shotodev999.workers.dev/?url=${
           src.sources.find((s: any) => s.quality === "default")?.url
         }`}
         aspectRatio="16/9"

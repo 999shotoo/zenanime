@@ -145,6 +145,7 @@ export async function FetchSource(id: string, dub: boolean) {
             formatedep = dubepid
         }
         const fetchurl = await gogoAnime.fetchEpisodeSources(formatedep);
+        console.log(fetchurl);
         return fetchurl;
     }
     catch (error) {
