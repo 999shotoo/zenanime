@@ -16,13 +16,19 @@ export default async function Anime() {
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="col-span-3 lg:col-span-2">
-            <AnimeDetails />
+            <Suspense>
+              <AnimeDetails />
+            </Suspense>
           </div>
           <div className="col-span-3 lg:col-span-1">
-            <Recommendations />
+            <Suspense>
+              <Recommendations />
+            </Suspense>
           </div>
           <div className="col-span-2">
-            <DisqusComments />
+            <Suspense>
+              <DisqusComments />
+            </Suspense>
           </div>
         </div>
       </main>
