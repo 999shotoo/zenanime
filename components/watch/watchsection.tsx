@@ -17,7 +17,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
 import { ScrollArea } from "../ui/scroll-area";
-import { FetchEpisodes, FetchEpisodes2 } from "@/action/fetchApi";
 import { VideoPlayer } from "./playersection";
 
 const EPISODES_PER_PAGE = 100;
@@ -55,18 +54,24 @@ export default function WatchSection() {
     const fetchEpisodes = async () => {
       setLoading(true);
       try {
-        const data = await FetchEpisodes2(animeid || "");
+        const headers = new Headers();
+        headers.append("x-zen", process.env.NEXT_PUBLIC_ZENANIME_API_KEY || "");
+        const fetchdata = await fetch(
+          `${process.env.NEXT_PUBLIC_ZENANIME_API_URL}episodes?id=${animeid}`,
+          {
+            headers: headers,
+          }
+        );
+        const data = await fetchdata.json();
         if (Array.isArray(data)) {
-          // Map the new data structure to the expected format
           const formattedEpisodes = data.map((ep) => ({
             id: ep.tvdbId, // Assuming tvdbId is unique
-            number: ep.tvdbNumber,
+            number: ep.episodeNumber,
             title: ep.tvdbTitle,
             description: ep.tvdbDescription,
             img: ep.tvdbImg,
             rating: ep.rating,
             isFiller: ep.isFiller,
-            gogoId: ep.gogoId,
             zoroId: ep.zoroId,
           }));
           setEpisodes(formattedEpisodes);

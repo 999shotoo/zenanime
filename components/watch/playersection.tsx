@@ -7,8 +7,9 @@ import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Flag } from "lucide-react";
 import Cookies from "js-cookie"; // Ensure you have this installed
-import { FetchSource } from "@/action/fetchApi";
+
 import { DefaultPlayer } from "./players/defaultplayer";
+import { FetchSource } from "@/action/fetchsources";
 
 interface VideoPlayerProps {
   activeEpisode: any;
