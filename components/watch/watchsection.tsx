@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/select";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-
 import { ScrollArea } from "../ui/scroll-area";
 import { VideoPlayer } from "./playersection";
 
@@ -33,7 +32,6 @@ export default function WatchSection() {
   const [debouncedSearch, setDebouncedSearch] = useState<string>(search);
   const [activeEpisode, setActiveEpisode] = useState<any>(null);
   const [videoLoading, setVideoLoading] = useState<boolean>(true);
-  const [videoCardLoading, setVideoCardLoading] = useState<boolean>(true);
   const [layout, setLayout] = useState<"numbers" | "titles" | "thumbnails">(
     () => {
       if (typeof window !== "undefined") {
@@ -53,28 +51,19 @@ export default function WatchSection() {
   useEffect(() => {
     const fetchEpisodes = async () => {
       setLoading(true);
+      if (!animeid) return; // Early return if animeid is not available
+
       try {
         const headers = new Headers();
         headers.append("x-zen", process.env.NEXT_PUBLIC_ZENANIME_API_KEY || "");
-        const fetchdata = await fetch(
+        const response = await fetch(
           `${process.env.NEXT_PUBLIC_ZENANIME_API_URL}episodes?id=${animeid}`,
-          {
-            headers: headers,
-          }
+          { headers }
         );
-        const data = await fetchdata.json();
+        const data = await response.json();
         if (Array.isArray(data)) {
-          const formattedEpisodes = data.map((ep) => ({
-            id: ep.tvdbId, // Assuming tvdbId is unique
-            number: ep.episodeNumber,
-            title: ep.tvdbTitle,
-            description: ep.tvdbDescription,
-            img: ep.tvdbImg,
-            rating: ep.rating,
-            isFiller: ep.isFiller,
-            zoroId: ep.zoroId,
-          }));
-          setEpisodes(formattedEpisodes);
+          // Directly set the episodes without formatting
+          setEpisodes(data);
         } else {
           setEpisodes([]);
         }
@@ -90,31 +79,36 @@ export default function WatchSection() {
   }, [animeid]);
 
   const filteredEpisodes = useMemo(() => {
-    return episodes.filter(
-      (ep) =>
-        (ep.title &&
-          ep.title.toLowerCase().includes(debouncedSearch.toLowerCase())) ||
-        ep.number.toString().includes(debouncedSearch)
-    );
+    return episodes.filter((ep) => {
+      const titleMatch =
+        ep.tvdbTitle &&
+        ep.tvdbTitle.toLowerCase().includes(debouncedSearch.toLowerCase());
+      const numberMatch =
+        ep.episodeNumber &&
+        ep.episodeNumber.toString().includes(debouncedSearch);
+      return titleMatch || numberMatch;
+    });
   }, [debouncedSearch, episodes]);
 
   const totalPages = Math.ceil(filteredEpisodes.length / EPISODES_PER_PAGE);
   const paginatedEpisodes = useMemo(() => {
     const startIndex = (currentPage - 1) * EPISODES_PER_PAGE;
-    return filteredEpisodes.slice(startIndex, startIndex + EPISODES_PER_PAGE);
+    const endIndex = startIndex + EPISODES_PER_PAGE;
+    return filteredEpisodes.slice(startIndex, endIndex);
   }, [filteredEpisodes, currentPage]);
 
+  // Reset to the first page when the search changes
   useEffect(() => {
     setCurrentPage(1);
   }, [debouncedSearch]);
-
   useEffect(() => {
     if (episodes.length > 0) {
       const episodeNumber = episodeNumberParam
         ? parseInt(episodeNumberParam)
         : 1;
       const episode =
-        episodes.find((ep) => ep.number === episodeNumber) || episodes[0];
+        episodes.find((ep) => ep.episodeNumber === episodeNumber) ||
+        episodes[0];
       setActiveEpisode(episode);
     }
   }, [episodeNumberParam, episodes]);
@@ -122,10 +116,8 @@ export default function WatchSection() {
   useEffect(() => {
     if (activeEpisode) {
       setVideoLoading(true);
-      setVideoCardLoading(true);
       const timer = setTimeout(() => {
         setVideoLoading(false);
-        setVideoCardLoading(false);
       }, 1000);
 
       return () => clearTimeout(timer);
@@ -256,16 +248,18 @@ export default function WatchSection() {
                     transition={{ duration: 0.3 }}
                     className={
                       layout === "numbers"
-                        ? "grid grid-cols-5 gap-2"
-                        : "space-y-3"
+                        ? "grid grid-cols-5 gap-2 "
+                        : "space-y"
                     }
                   >
                     {paginatedEpisodes.map((episode) => (
                       <EpisodeCard
-                        key={episode.id}
+                        key={episode.zoroId}
                         episode={episode}
                         animeid={animeid}
-                        isActive={activeEpisode?.number === episode.number}
+                        isActive={
+                          activeEpisode?.episodeNumber === episode.episodeNumber
+                        }
                         dubParam={Boolean(dubParam)}
                         layout={layout}
                       />
@@ -299,7 +293,7 @@ function EpisodeCard({
     if (animeid) {
       const newUrl = new URL(`/watch`, window.location.origin);
       newUrl.searchParams.set("id", animeid);
-      newUrl.searchParams.set("ep", episode.number.toString());
+      newUrl.searchParams.set("ep", episode.episodeNumber.toString());
       if (dubParam) {
         newUrl.searchParams.set("dub", dubParam.toString());
       }
@@ -313,7 +307,7 @@ function EpisodeCard({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.2 }}
-      className={`group relative overflow-hidden rounded-lg bg-card transition-colors cursor-pointer border border-border ${
+      className={`group relative overflow-hidden rounded-lg bg-card transition-colors cursor-pointer border border-border my-2 ${
         isActive ? "bg-card border-l-2 border-primary" : "hover:bg-accent"
       }`}
     >
@@ -326,14 +320,14 @@ function EpisodeCard({
         {layout === "thumbnails" && (
           <div className="relative flex-shrink-0">
             <Image
-              src={episode.img}
-              alt={episode.title || `Episode ${episode.number}`}
+              src={episode.tvdbImg}
+              alt={episode.tvdbTitle || `Episode ${episode.episodeNumber}`}
               width={180}
               height={100}
               className="rounded-md object-cover aspect-video"
             />
             <div className="absolute bottom-2 left-2 bg-background/80 px-2 py-0.5 rounded text-xs font-medium">
-              EP {episode.number}
+              EP {episode.episodeNumber}
             </div>
           </div>
         )}
@@ -343,17 +337,17 @@ function EpisodeCard({
           }`}
         >
           {layout === "numbers" ? (
-            <span className="text-lg font-medium">{episode.number}</span>
+            <span className="text-lg font-medium">{episode.episodeNumber}</span>
           ) : (
             <>
               <h3 className="font-semibold line-clamp-1">
-                {`Episode ${episode.number} - ${episode.title}` ||
-                  `Episode ${episode.number}`}
+                {`Episode ${episode.episodeNumber} - ${episode.tvdbTitle}` ||
+                  `Episode ${episode.episodeNumber}`}
               </h3>
               {layout === "thumbnails" && (
                 <>
                   <p className="text-sm text-muted-foreground line-clamp-2">
-                    {episode.description || "No description available"}
+                    {episode.tvdbDescription || "No description available"}
                   </p>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Calendar className="h-3 w-3" />

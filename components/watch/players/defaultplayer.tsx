@@ -43,7 +43,7 @@ ${label}
   return (
     <div className="rounded-3xl overflow-hidden">
       <MediaPlayer
-        title={activeEpisode?.title || "Video Player"}
+        title={activeEpisode.title}
         src={`${src.sources[0].url}`}
         aspectRatio="16/9"
         className="rounded-3xl"
