@@ -31,10 +31,12 @@ export function VideoPlayer({ activeEpisode }: VideoPlayerProps) {
 
       setLoading(true);
       try {
-        const data = await FetchSource(
-          activeEpisode.zoroId,
-          selectedLanguage === "dub"
+        const responese = await fetch(
+          `/api/watch?id=${activeEpisode.zoroId}&dub=${
+            selectedLanguage === "dub"
+          }`
         );
+        const data = await responese.json();
         setEpisodeData(data);
       } catch (error) {
         console.error("Failed to fetch episode data:", error);
