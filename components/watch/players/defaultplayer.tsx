@@ -7,6 +7,7 @@ import {
   defaultLayoutIcons,
   DefaultVideoLayout,
 } from "@vidstack/react/player/layouts/default";
+import { useEffect, useState } from "react";
 
 export function DefaultPlayer(props: {
   src: any;
@@ -15,8 +16,12 @@ export function DefaultPlayer(props: {
 }) {
   const src = props.src;
   const activeEpisode = props.activeEpisode;
+  const [isClient, setIsClient] = useState(false);
 
-  // Function to generate VTT content
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const generateVTTContent = (start: number, end: number, label: string) => {
     return `WEBVTT
 
@@ -26,25 +31,25 @@ ${label}
 `;
   };
 
-  // Function to format time in VTT format (HH:MM:SS.mmm)
   const formatTime = (seconds: number) => {
     const date = new Date(0);
     date.setSeconds(seconds);
-    return date.toISOString().substr(11, 8) + ".000"; // HH:MM:SS.mmm
+    return date.toISOString().substr(11, 8) + ".000";
   };
 
-  // Generate VTT content for intro and outro
   const introVTT = generateVTTContent(src.intro.start, src.intro.end, "Intro");
   const outroVTT = generateVTTContent(src.outro.start, src.outro.end, "Outro");
-
-  // Combine intro and outro into a single VTT content
   const combinedVTT = `${introVTT}\n${outroVTT}`;
+
+  if (!isClient) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="rounded-3xl overflow-hidden">
       <MediaPlayer
         title={activeEpisode.title}
-        src={`${src.sources[0].url}`}
+        src={src.sources.length > 0 ? src.sources[0].url : ""}
         aspectRatio="16/9"
         className="rounded-3xl"
         autoPlay={true}
@@ -60,18 +65,17 @@ ${label}
               default={track.default ? true : false}
             />
           ))}
-
         <Track
           content={combinedVTT}
           kind="chapters"
           type="vtt"
           default={true}
         />
-
         <DefaultVideoLayout
           icons={defaultLayoutIcons}
           thumbnails={
-            src.tracks.find((track: any) => track.kind === "thumbnails").file
+            src.tracks.find((track: any) => track.kind === "thumbnails")
+              ?.file || "/placeholder.svg"
           }
         />
       </MediaPlayer>

@@ -26,6 +26,7 @@ export async function FetchSource(id: string, dub: boolean) {
                         };
                     });
                 }
+                console.log(`Fetched from ${server}:`, fetchurl);
                 return fetchurl;
             }
         } catch (error) {

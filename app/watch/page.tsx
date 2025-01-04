@@ -25,7 +25,7 @@ export default async function Anime() {
               <Recommendations />
             </Suspense>
           </div>
-          <div className="col-span-2">
+          <div className="col-span-3">
             <Suspense>
               <DisqusComments />
             </Suspense>

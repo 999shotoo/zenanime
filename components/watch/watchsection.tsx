@@ -17,8 +17,35 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "../ui/scroll-area";
 import { VideoPlayer } from "./playersection";
+import { cn } from "@/lib/utils";
+import { FetchEpisodesAll } from "@/action/fetchepisodes";
 
 const EPISODES_PER_PAGE = 100;
+
+function ThumbnailSkeleton() {
+  return (
+    <div className="flex gap-3 p-2 bg-background/5 rounded-lg">
+      <Skeleton className="h-[80px] w-[120px] rounded-md flex-shrink-0" />
+      <div className="flex-1 space-y-2 py-1">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-3 w-full" />
+        <Skeleton className="h-3 w-2/3" />
+      </div>
+    </div>
+  );
+}
+
+function TitleSkeleton() {
+  return (
+    <div className="px-4 py-2.5 bg-background/5 rounded-lg">
+      <Skeleton className="h-5 w-full" />
+    </div>
+  );
+}
+
+function NumberSkeleton() {
+  return <div className="aspect-square bg-background/5 rounded-lg" />;
+}
 
 export default function WatchSection() {
   const params = useSearchParams();
@@ -33,14 +60,7 @@ export default function WatchSection() {
   const [activeEpisode, setActiveEpisode] = useState<any>(null);
   const [videoLoading, setVideoLoading] = useState<boolean>(true);
   const [layout, setLayout] = useState<"numbers" | "titles" | "thumbnails">(
-    () => {
-      if (typeof window !== "undefined") {
-        if (window.innerWidth >= 1024) return "thumbnails";
-        if (window.innerWidth >= 768) return "titles";
-        return "numbers";
-      }
-      return "numbers";
-    }
+    "thumbnails"
   );
 
   useEffect(() => {
@@ -54,15 +74,8 @@ export default function WatchSection() {
       if (!animeid) return; // Early return if animeid is not available
 
       try {
-        const headers = new Headers();
-        headers.append("x-zen", process.env.NEXT_PUBLIC_ZENANIME_API_KEY || "");
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_ZENANIME_API_URL}episodes?id=${animeid}`,
-          { headers }
-        );
-        const data = await response.json();
+        const data = await FetchEpisodesAll(animeid);
         if (Array.isArray(data)) {
-          // Directly set the episodes without formatting
           setEpisodes(data);
         } else {
           setEpisodes([]);
@@ -165,7 +178,7 @@ export default function WatchSection() {
                 />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               </div>
-              <div className="flex gap-2">
+              {/* <div className="flex gap-2">
                 <Button
                   variant="outline"
                   size="icon"
@@ -189,7 +202,7 @@ export default function WatchSection() {
                     <ImageIcon className="h-4 w-4" />
                   )}
                 </Button>
-              </div>
+              </div> */}
               {totalPages > 1 && (
                 <Select
                   value={currentPage.toString()}
@@ -213,7 +226,7 @@ export default function WatchSection() {
                 </Select>
               )}
             </div>
-            <ScrollArea className="h-[calc(100vh-18rem)]">
+            <ScrollArea className="h-[calc(100vh-18rem)] p-2">
               <AnimatePresence mode="wait">
                 {loading ? (
                   <motion.div
@@ -222,10 +235,18 @@ export default function WatchSection() {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="space-y-4"
+                    className="space-y-1"
                   >
-                    {Array.from({ length: 5 }).map((_, index) => (
-                      <Skeleton key={index} className="h-32" />
+                    {Array.from({ length: 8 }).map((_, index) => (
+                      <div key={index}>
+                        {layout === "thumbnails" ? (
+                          <ThumbnailSkeleton />
+                        ) : layout === "titles" ? (
+                          <TitleSkeleton />
+                        ) : (
+                          <NumberSkeleton />
+                        )}
+                      </div>
                     ))}
                   </motion.div>
                 ) : paginatedEpisodes.length === 0 ? (
@@ -262,6 +283,7 @@ export default function WatchSection() {
                         }
                         dubParam={Boolean(dubParam)}
                         layout={layout}
+                        isWatched={false}
                       />
                     ))}
                   </motion.div>
@@ -279,12 +301,14 @@ function EpisodeCard({
   episode,
   animeid,
   isActive,
+  isWatched,
   dubParam,
   layout,
 }: {
   episode: any;
   animeid: string | null;
   isActive: boolean;
+  isWatched: boolean;
   dubParam?: boolean;
   layout: "numbers" | "titles" | "thumbnails";
 }) {
@@ -301,65 +325,89 @@ function EpisodeCard({
     }
   };
 
+  if (layout === "numbers") {
+    return (
+      <motion.button
+        layout
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        onClick={handleEpisodeClick}
+        className={cn(
+          "rounded p-2 flex items-center justify-center transition-colors",
+          isActive && "bg-primary",
+          isWatched && !isActive && "bg-sage-500/20 text-sage-500",
+          !isActive && !isWatched && "hover:bg-accent"
+        )}
+      >
+        {episode.episodeNumber}
+      </motion.button>
+    );
+  }
+
+  if (layout === "titles") {
+    return (
+      <motion.button
+        layout
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        onClick={handleEpisodeClick}
+        className={cn(
+          "w-full px-4 py-2.5 text-left text-sm transition-colors rounded",
+          isActive && "bg-primary",
+          isWatched && !isActive && "text-sage-500",
+          !isActive && !isWatched && "hover:bg-accent"
+        )}
+      >
+        {episode.episodeNumber}.{" "}
+        {episode.tvdbTitle || `Episode ${episode.episodeNumber}`}
+      </motion.button>
+    );
+  }
+
   return (
-    <motion.div
+    <motion.button
       layout
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
-      className={`group relative overflow-hidden rounded-lg bg-card transition-colors cursor-pointer border border-border my-2 ${
-        isActive ? "bg-card border-l-2 border-primary" : "hover:bg-accent"
-      }`}
+      onClick={handleEpisodeClick}
+      className={cn(
+        "flex gap-3 p-2 text-left transition-colors rounded-lg",
+        isActive && "border-primary border-2",
+        !isActive && "hover:bg-accent"
+      )}
     >
-      <div
-        className={`flex ${layout === "numbers" ? "p-2" : "p-4"} ${
-          layout === "titles" ? "gap-2" : "gap-4"
-        }`}
-        onClick={handleEpisodeClick}
-      >
-        {layout === "thumbnails" && (
-          <div className="relative flex-shrink-0">
-            <Image
-              src={episode.tvdbImg}
-              alt={episode.tvdbTitle || `Episode ${episode.episodeNumber}`}
-              width={180}
-              height={100}
-              className="rounded-md object-cover aspect-video"
-            />
-            <div className="absolute bottom-2 left-2 bg-background/80 px-2 py-0.5 rounded text-xs font-medium">
-              EP {episode.episodeNumber}
-            </div>
-          </div>
-        )}
-        <div
-          className={`flex-1 min-w-0 ${
-            layout === "numbers" ? "text-center" : ""
-          }`}
-        >
-          {layout === "numbers" ? (
-            <span className="text-lg font-medium">{episode.episodeNumber}</span>
-          ) : (
-            <>
-              <h3 className="font-semibold line-clamp-1">
-                {`Episode ${episode.episodeNumber} - ${episode.tvdbTitle}` ||
-                  `Episode ${episode.episodeNumber}`}
-              </h3>
-              {layout === "thumbnails" && (
-                <>
-                  <p className="text-sm text-muted-foreground line-clamp-2">
-                    {episode.tvdbDescription || "No description available"}
-                  </p>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Calendar className="h-3 w-3" />
-                    <span>{episode.rating || "Release date unavailable"}</span>
-                  </div>
-                </>
-              )}
-            </>
-          )}
+      <div className="relative flex-shrink-0">
+        <Image
+          src={episode.tvdbImg}
+          alt={episode.tvdbTitle || `Episode ${episode.episodeNumber}`}
+          width={120}
+          height={80}
+          className="rounded object-cover w-[120px] h-[80px]"
+        />
+        <div className="absolute top-1 left-1 bg-black px-1.5 py-0.5 rounded text-[10px] font-medium">
+          EP {episode.episodeNumber}
         </div>
       </div>
-      <div className="absolute inset-y-0 left-0 w-1 bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-    </motion.div>
+      <div className="flex-1 min-w-0 py-1">
+        <h3 className="font-medium line-clamp-1 text-sm">
+          {episode.tvdbTitle || `Episode ${episode.episodeNumber}`}
+        </h3>
+        <p className="line-clamp-2 text-xs text-muted-foreground mt-1">
+          {episode.tvdbDescription || "No description available"}
+        </p>
+        <div className="flex items-center gap-1.5 mt-1.5">
+          <Calendar className="h-3 w-3 text-muted-foreground" />
+          <span className="text-[10px] text-muted-foreground">
+            {episode.rating || "Release date unavailable"}
+          </span>
+        </div>
+      </div>
+    </motion.button>
   );
 }
