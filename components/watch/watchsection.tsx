@@ -74,7 +74,8 @@ export default function WatchSection() {
       if (!animeid) return; // Early return if animeid is not available
 
       try {
-        const data = await FetchEpisodesAll(animeid);
+        const responese = await fetch(`/api/episodes?id=${animeid}`);
+        const data = await responese.json();
         if (Array.isArray(data)) {
           setEpisodes(data);
         } else {
