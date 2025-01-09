@@ -136,7 +136,7 @@ export const FetchZoroId = async (id: string) => {
         return 0;
     }
     try {
-        const response = await fetch(`https://api.malsync.moe/mal/anime/anilist:${id}`);
+        const response = await fetch(`https://renewed-georgeanne-nekonode-1aa70c0c.koyeb.app/fetch?url=https://api.malsync.moe/mal/anime/anilist:${id}`);
 
         if (!response.ok) {
             console.error(`Failed to fetch Zoro ID, status: ${response.status}`);
