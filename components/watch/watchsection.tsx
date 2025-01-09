@@ -377,7 +377,7 @@ function EpisodeCard({
       transition={{ duration: 0.2 }}
       onClick={handleEpisodeClick}
       className={cn(
-        "flex gap-3 p-2 text-left transition-colors rounded-lg",
+        "flex gap-3 p-2 text-left transition-colors rounded-lg w-full",
         isActive && "border-primary border-2",
         !isActive && "hover:bg-accent"
       )}

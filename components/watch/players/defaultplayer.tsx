@@ -46,13 +46,13 @@ ${label}
   }
 
   return (
-    <div className="rounded-3xl overflow-hidden">
+    <div className="">
       <MediaPlayer
         title={activeEpisode.title}
         src={src.sources.length > 0 ? src.sources[0].url : ""}
         aspectRatio="16/9"
         className="rounded-3xl"
-        autoPlay={true}
+        playsInline
       >
         <MediaProvider />
         {src.tracks

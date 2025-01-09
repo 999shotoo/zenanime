@@ -704,3 +704,28 @@ query($page: Int, $perPage: Int, $from: Int, $to: Int){
     }
   }
 }`
+
+
+export const Recommendations = `
+          query ($id: Int) {
+            Media(id: $id, type: ANIME) {
+              recommendations(sort: RATING_DESC) {
+                nodes {
+                  mediaRecommendation {
+                    id
+                    title {
+                      userPreferred
+                    }
+                    coverImage {
+                      medium
+                    }
+                    format
+                    episodes
+                    status
+                  }
+                }
+              }
+            }
+          }
+        `;
+

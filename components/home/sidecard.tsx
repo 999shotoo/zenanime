@@ -11,7 +11,7 @@ interface SidebarProps {
   data: Media[];
 }
 
-export function TopAiringAnime(props: SidebarProps) {
+export function SiderCard(props: SidebarProps) {
   const animeList = props.data;
   return (
     <Card className="w-full  bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">

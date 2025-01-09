@@ -24,6 +24,7 @@
     "@tanstack/react-query": "^5.62.10",
     "@vidstack/react": "^1.12.12",
     "aniwatch": "^2.18.1",
+    "artplayer": "^5.2.1",
     "asecretpackageforaniscrappingmadebysomeone": "^1.8.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

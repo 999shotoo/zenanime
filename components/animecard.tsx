@@ -12,18 +12,17 @@ export default function AnimeCards(props: { data: any[] }) {
             key={index}
             className="rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
           >
-            <Link className="block" href={`/watch/${anime.id}/1`}>
+            <Link className="block" href={`/watch?id=${anime.id}`}>
               <div className="relative w-full pt-[133.33%]">
-                {" "}
-                {/* 3:4 aspect ratio */}
                 <Image
                   alt={anime.title.userPreferred || anime.title_english}
-                  className="absolute top-0 left-0 w-full h-full object-cover rounded-t-lg"
+                  className="absolute top-0 left-0 w-full h-full object-cover rounded-lg"
                   src={anime.coverImage.large || "/image_not_found.jpg"}
-                  layout="fill"
+                  width={200}
+                  height={267}
                 />
               </div>
-              <div className="p-3">
+              <div className="py-3">
                 <h3 className="text-base sm:text-lg font-semibold truncate">
                   {anime.title.userPreferred || anime.title_english}
                 </h3>

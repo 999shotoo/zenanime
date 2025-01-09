@@ -68,7 +68,7 @@ const mapZoroEpisodes = async (zoroEpisodes: ZoroEpisode[], tvdbEpisodes: { [key
             episodeNumber: zoroEpisode.episode_no || matchedTvdbEpisode?.episode,
             isFiller: zoroEpisode.filler,
             tvdbTitle: matchedTvdbEpisode?.title.en || zoroEpisode.title,
-            tvdbDescription: matchedTvdbEpisode?.overview || matchedTvdbEpisode?.summary || null,
+            tvdbDescription: matchedTvdbEpisode?.overview || matchedTvdbEpisode?.summary || animeDetails.description || null,
             tvdbImg: matchedTvdbEpisode?.image || animeDetails.coverImage.extraLarge || null,
             rating: matchedTvdbEpisode?.rating || null,
             airdate: matchedTvdbEpisode?.airdate || null,

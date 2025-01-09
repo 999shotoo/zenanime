@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { ThemeProvider } from "@/components/provider/theme-provider";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,20 +29,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <NuqsAdapter>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            enableColorScheme={false}
-            disableTransitionOnChange
-          >
-            <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
-              <Navbar />
-              {children}
-            </div>
-          </ThemeProvider>
-        </NuqsAdapter>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          enableColorScheme={false}
+          disableTransitionOnChange
+        >
+          <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+            <Navbar />
+            {children}
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

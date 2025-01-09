@@ -1,6 +1,6 @@
 
 
-import { trending, animeinfo, advancedsearch, top100anime, seasonal, popular, Malid } from "./queries";
+import { trending, animeinfo, advancedsearch, top100anime, seasonal, popular, Malid, Recommendations } from "./queries";
 
 export interface Media {
     id: number;
@@ -44,6 +44,37 @@ export interface Media {
     seasonYear?: number;
     duration?: number;
     source?: string;
+    mediaRecommendation: {
+        id: number;
+        title: {
+            userPreferred: string;
+        };
+        coverImage: {
+            medium: string;
+        };
+        format: string;
+        episodes: number;
+        status: string;
+    };
+}
+
+export interface Media {
+    recommendations: {
+        nodes: Array<{
+            mediaRecommendation: {
+                id: number;
+                title: {
+                    userPreferred: string;
+                };
+                coverImage: {
+                    medium: string;
+                };
+                format: string;
+                episodes: number;
+                status: string;
+            };
+        }>;
+    };
 }
 
 interface PageResponse<T> {
@@ -92,7 +123,7 @@ export const PopularAnilist = async (page: number = 1): Promise<Media[] | undefi
                 query: popular,
                 variables: {
                     page: page,
-                    perPage: page === 1 ? 40 : 10,
+                    perPage: page === 1 ? 35 : 10,
                 },
             }),
         });
@@ -189,6 +220,31 @@ export const getMalID = async (animeid: number): Promise<Media | undefined> => {
             },
             body: JSON.stringify({
                 query: Malid,
+                variables: {
+                    id: animeid,
+                },
+            }),
+        });
+
+        const data: { data: { Media: Media } } = await response.json();
+        return data.data.Media;
+    } catch (error) {
+        console.error('Error fetching data from AniList:', error);
+    }
+
+}
+
+export const getRecommendations = async (animeid: number): Promise<Media | undefined> => {
+    try {
+        const response = await fetch('https://graphql.anilist.co', {
+            next: { revalidate: 3600 },
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+            body: JSON.stringify({
+                query: Recommendations,
                 variables: {
                     id: animeid,
                 },
