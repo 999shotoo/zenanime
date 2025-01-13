@@ -9,7 +9,6 @@ import { Flag } from "lucide-react";
 import Cookies from "js-cookie"; // Ensure you have this installed
 
 import { DefaultPlayer } from "./players/defaultplayer";
-import { FetchSource } from "@/action/fetchsources";
 
 interface VideoPlayerProps {
   activeEpisode: any;
@@ -32,9 +31,9 @@ export function VideoPlayer({ activeEpisode }: VideoPlayerProps) {
       setLoading(true);
       try {
         const responese = await fetch(
-          `/api/watch?id=${activeEpisode.zoroId}&dub=${
-            selectedLanguage === "dub"
-          }`
+          `${process.env.NEXT_PUBLIC_ZENANIME_API_URL}/api/sources?id=${
+            activeEpisode.zoroId
+          }&dub=${selectedLanguage === "dub"}`
         );
         const data = await responese.json();
         setEpisodeData(data);

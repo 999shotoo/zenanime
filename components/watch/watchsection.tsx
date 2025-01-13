@@ -18,7 +18,6 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "../ui/scroll-area";
 import { VideoPlayer } from "./playersection";
 import { cn } from "@/lib/utils";
-import { FetchEpisodesAll } from "@/action/fetchepisodes";
 
 const EPISODES_PER_PAGE = 100;
 
@@ -74,7 +73,9 @@ export default function WatchSection() {
       if (!animeid) return; // Early return if animeid is not available
 
       try {
-        const responese = await fetch(`/api/episodes?id=${animeid}`);
+        const responese = await fetch(
+          `${process.env.NEXT_PUBLIC_ZENANIME_API_URL}/api/episodes?id=${animeid}`
+        );
         const data = await responese.json();
         if (Array.isArray(data)) {
           setEpisodes(data);
