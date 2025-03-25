@@ -14,7 +14,7 @@ export function DefaultPlayer(props: {
   activeEpisode: any;
   animeid: string;
 }) {
-  const src = props.src;
+  const src = `https://renewed-georgeanne-nekonode-1aa70c0c.koyeb.app/fetch?url=${props.src}`;
   const activeEpisode = props.activeEpisode;
   const [isClient, setIsClient] = useState(false);
 
