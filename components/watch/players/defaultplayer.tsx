@@ -14,7 +14,7 @@ export function DefaultPlayer(props: {
   activeEpisode: any;
   animeid: string;
 }) {
-  const src = `https://renewed-georgeanne-nekonode-1aa70c0c.koyeb.app/fetch?url=${props.src}`;
+  const src = props.src;
   const activeEpisode = props.activeEpisode;
   const [isClient, setIsClient] = useState(false);
 
@@ -49,7 +49,7 @@ ${label}
     <div className="">
       <MediaPlayer
         title={activeEpisode.title}
-        src={src.sources.length > 0 ? src.sources[0].url : ""}
+        src={src.sources.length > 0 ? `https://renewed-georgeanne-nekonode-1aa70c0c.koyeb.app/fetch?url=${src.sources[0].url}` : ""}
         aspectRatio="16/9"
         className="rounded-3xl"
         playsInline
