@@ -49,7 +49,7 @@ ${label}
     <div className="">
       <MediaPlayer
         title={activeEpisode.title}
-        src={src.sources.length > 0 ? `https://renewed-georgeanne-nekonode-1aa70c0c.koyeb.app/fetch?url=${src.sources[0].url}` : ""}
+        src={src.sources.length > 0 ? `https://gogoanime-and-hianime-proxy.vercel.app/m3u8-proxy?url=${src.sources[0].url}` : ""}
         aspectRatio="16/9"
         className="rounded-3xl"
         playsInline
