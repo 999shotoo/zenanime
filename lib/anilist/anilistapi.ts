@@ -1,3 +1,4 @@
+"use server";
 
 
 import { trending, animeinfo, advancedsearch, top100anime, seasonal, popular, Malid, Recommendations } from "./queries";

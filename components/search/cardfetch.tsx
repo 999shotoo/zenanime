@@ -1,18 +1,25 @@
 "use client";
 
-import { PopularAnilist } from "@/lib/anilist/anilistapi";
+import {
+  AdvancedSearch,
+  Media,
+  PopularAnilist,
+} from "@/lib/anilist/anilistapi";
 import { useEffect, useState } from "react";
 import AnimeCards, { AnimeCardsSkeleton } from "../animecard";
+import { useSearchParams } from "next/navigation";
 
-export default function HomePopularSection() {
-  const [popular, setPopular] = useState<any[] | undefined>([]);
+export default function SearchCards() {
+  const [popular, setPopular] = useState<Media[] | undefined>([]);
   const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const fetchPopular = async () => {
+      const search = searchParams.get("query");
       setLoading(true);
-      const data = await PopularAnilist();
-      setPopular(data);
+      const data = await AdvancedSearch(search as string);
+      setPopular(data?.data.Page.media);
       setLoading(false);
     };
     fetchPopular();
@@ -23,7 +30,7 @@ export default function HomePopularSection() {
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
-      transition: { delay: i * 0.1 }, 
+      transition: { delay: i * 0.1 },
     }),
   };
 
@@ -36,7 +43,7 @@ export default function HomePopularSection() {
           ))
         ) : popular?.length ? (
           popular.map((anime: any, index: number) => (
-              <AnimeCards anime={anime} key={index}  />
+            <AnimeCards anime={anime} key={index} />
           ))
         ) : (
           <div className="col-span-full text-center">
