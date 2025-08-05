@@ -49,7 +49,7 @@ ${label}
     <div className="">
       <MediaPlayer
         title={activeEpisode.title}
-        src={src.sources.length > 0 ? `https://m3u8-proxy-6yqw.onrender.com/m3u8-proxy?url=${src.sources[0].url}` : ""}
+        src={src.sources.length > 0 ? `https://m3u8-proxy-6yqw.onrender.com/m3u8-proxy?url=${src.sources[0].url}&ref=${src.headers.Referer}&orgin=${src.headers.Referer}` : ""}
         aspectRatio="16/9"
         className="rounded-3xl"
         playsInline
